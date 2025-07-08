@@ -1,4 +1,5 @@
 DE_Take_Home_Assignment.pdf
 .env
 .DS_Store
-db/weather_data.db
+db/*.db
+__pycache__/*
