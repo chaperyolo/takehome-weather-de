@@ -90,3 +90,14 @@ This project has been tested with the following Python versions:
 - Python 3.12
 
 Other versions may work, but these are the ones confirmed to be compatible.
+
+## exploration.ipynb
+
+This notebook was used during the development phase to understand the structure of the data retrieved from the API. It helped in:
+- Inspecting raw responses from the station and observations endpoints.
+- Understanding the format, frequency, and variability of the data.
+- Defining which fields to extract and store in the database.
+- Verifying that timestamps, temperature, wind speed, and humidity values were consistent and usable.
+- Performing basic quality checks like null value inspection and date range validation.
+
+It is not required for running the pipeline but is included as documentation of the exploratory data analysis process.
