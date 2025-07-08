@@ -4,7 +4,7 @@ from urllib import response
 import requests
 import pandas as pd
 from dotenv import load_dotenv
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 
 # --- initial config ---
 load_dotenv()
@@ -74,9 +74,11 @@ def fetch_data():
         result = cursor.fetchone()[0]
     if result:
         start_date = datetime.strptime(result, "%Y-%m-%dT%H:%M:%S")
+        start_date_str = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
     else:
-        start_date = datetime.now(UTC) - timedelta(days=7)
-    start_date_str = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+        #utcnow is deprecated but i'm keeping it for compatibility with more python versions
+        start_date = datetime.utcnow() - timedelta(days=7)
+        start_date_str = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     try:
         response = requests.get(url_obs, headers=headers, params={"start": start_date_str})
