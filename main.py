@@ -4,31 +4,16 @@ from urllib import response
 import requests
 import pandas as pd
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 # --- initial config ---
 load_dotenv()
 
 #loading environment variables. printing and selecting default if the variable is not found
-STATION_ID = os.getenv("STATION_ID")
-if STATION_ID is None:
-    print("STATION_ID not found in .env, using 'KGPH' by default.")
-    STATION_ID = "KGPH"
-
-API_BASE_URL = os.getenv("API_BASE_URL")
-if API_BASE_URL is None:
-    print("API_BASE_URL not found in .env, using 'https://api.weather.gov' by default.")
-    API_BASE_URL = "https://api.weather.gov"
-
-USER_AGENT = os.getenv("USER_AGENT")
-if USER_AGENT is None:
-    print("USER_AGENT not found in .env, using default value.")
-    USER_AGENT = "(example_weather_app, contact@example.com)"
-
-DB_PATH = os.getenv("DB_PATH")
-if DB_PATH is None:
-    print("DB_PATH not found in .env, using 'db/weather_data.db' by default.")
-    DB_PATH = "db/weather_data.db"
+STATION_ID = os.getenv("STATION_ID", "KGPH")
+API_BASE_URL = os.getenv("API_BASE_URL", "https://api.weather.gov")
+USER_AGENT = os.getenv("USER_AGENT", "(example_weather_app, contact@example.com)")
+DB_PATH = os.getenv("DB_PATH", "db/weather_data.db")
 
 # creates the directory for the database if it doesn't exist
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -76,7 +61,21 @@ def fetch_data():
 
     # observations
     url_obs = f"{API_BASE_URL}/stations/{STATION_ID}/observations"
-    start_date = datetime.utcnow() - timedelta(days=7)
+
+    # avoids re-downloading data already present in the database.
+    # uses the latest timestamp stored to fetch only new observations. (if any)
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT MAX(observation_timestamp)
+            FROM weather_data
+            WHERE station_id = ?
+        """, (STATION_ID,))
+        result = cursor.fetchone()[0]
+    if result:
+        start_date = datetime.strptime(result, "%Y-%m-%dT%H:%M:%S")
+    else:
+        start_date = datetime.now(UTC) - timedelta(days=7)
     start_date_str = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     try:
