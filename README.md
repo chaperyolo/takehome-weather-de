@@ -80,6 +80,8 @@ If any of these are not provided, the script will fall back to the default value
 Because the pipeline only fetches the last 7 days of data, if the script is run for the first time mid-week (e.g., Wednesday), there may not be enough historical data to cover the full week (Monday and Tuesday would be missing).
 This design choice follows the assignment’s instruction to fetch only 7 days of data.
 - Creating an index on observation_timestamp in the `weather_data` table may improve performance for larger datasets (not included in this version for simplicity).
+- All measurements (temperature, wind speed, humidity) are assumed to have consistent units across all observations for a given station. Therefore, the columns for unit of measurement are not included in the database schema. If data from multiple stations with varying measurement units were to be integrated, the schema should be extended to include unit fields (e.g., temperature_unit, wind_speed_unit) to ensure data consistency.
+
 
 ## Compatibility
 
