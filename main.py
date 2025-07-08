@@ -47,12 +47,9 @@ def fetch_data():
     url_station = f"{API_BASE_URL}/stations/{STATION_ID}"
     try:
         station = requests.get(url_station, headers=headers)
-        #handling 404 error
-        if station.status_code == 404:
-            raise RuntimeError(f"Station '{STATION_ID}' not found (404)")
         station.raise_for_status()
         station_json = station.json()
-    #handles other errors
+    #handles errors
     except Exception as e:
         raise RuntimeError(f"Error fetching station info: {e}")
 
