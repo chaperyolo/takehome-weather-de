@@ -62,11 +62,21 @@ This script executes all .sql queries inside the queries/ folder and prints the 
 
 The following variables should be defined in your `.env` file:
 
-| Variable       | Default (if not provided)                     |
-|----------------|-----------------------------------------------|
-| `STATION_ID`   | `KGPH`                                        |
-| `API_BASE_URL` | `https://api.weather.gov`                     |
-| `USER_AGENT`   | `(example_weather_app, contact@example.com)`  |
-| `DB_PATH`      | `db/weather_data.db`                          |
+| Variable       | Description                | Default (if not provided)                     |
+|----------------|----------------------------|-----------------------------------------------|
+| `STATION_ID`   |NOAA station ID             | `KGPH`                                        |
+| `API_BASE_URL` |Base URL of the weather API | `https://api.weather.gov`                     |
+| `USER_AGENT`   |Required for API access     | `(example_weather_app, contact@example.com)`  |
+| `DB_PATH`      |SQLite DB location          | `db/weather_data.db`                          |
+| `QUERIES_DIR`  |Folder with .sql queries    | `queries`                                     |
 
 If any of these are not provided, the script will fall back to the default values above without throwing an error.
+
+## Notes & Assumptions
+- The pipeline avoids inserting duplicate records using `INSERT OR IGNORE`.
+- If data already exists in the database, the script fetches only newer observations.
+- Date filtering is based on the observation_timestamp column.
+- Important: One of the queries computes weekly metrics starting from last Monday.
+Because the pipeline only fetches the last 7 days of data, if the script is run for the first time mid-week (e.g., Wednesday), there may not be enough historical data to cover the full week (Monday and Tuesday would be missing).
+This design choice follows the assignment’s instruction to fetch only 7 days of data.
+- Creating an index on observation_timestamp in the `weather_data` table may improve performance for larger datasets (not included in this version for simplicity).
