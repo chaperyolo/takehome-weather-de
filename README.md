@@ -80,3 +80,13 @@ If any of these are not provided, the script will fall back to the default value
 Because the pipeline only fetches the last 7 days of data, if the script is run for the first time mid-week (e.g., Wednesday), there may not be enough historical data to cover the full week (Monday and Tuesday would be missing).
 This design choice follows the assignment’s instruction to fetch only 7 days of data.
 - Creating an index on observation_timestamp in the `weather_data` table may improve performance for larger datasets (not included in this version for simplicity).
+
+## Compatibility
+
+This project has been tested with the following Python versions:
+
+- Python 3.9
+- Python 3.10
+- Python 3.12
+
+Other versions may work, but these are the ones confirmed to be compatible.
